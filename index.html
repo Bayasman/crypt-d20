@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111618">
+  <title>Склеп двадцати граней</title>
+  <meta name="description" content="Шесть героев, одна усыпальница. Пошаговый автобой с повтором и журналом.">
+  <link rel="icon" href="./assets/d20.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div class="identity">
+        <div class="crest" aria-hidden="true"><img src="./assets/d20.svg" alt=""></div>
+        <div>
+          <p class="eyebrow">Журнал подземелья</p>
+          <h1>Склеп двадцати граней</h1>
+          <p class="intro">Шесть бойцов входят в усыпальницу. Выходит один.</p>
+        </div>
+      </div>
+      <button type="button" class="button secondary" id="show-rules" aria-haspopup="dialog">Правила боя</button>
+    </header>
+
+    <div class="workspace">
+      <section class="board panel" aria-labelledby="board-title">
+        <header class="panel-header board-header">
+          <div>
+            <p class="eyebrow">Карта подземелья</p>
+            <h2 id="board-title">Усыпальница</h2>
+          </div>
+          <div class="board-actions">
+            <span id="round" class="round">До боя</span>
+            <button type="button" id="toggle" class="button primary"><span id="play-symbol" aria-hidden="true">▶</span><span id="play-label">Начать бой</span></button>
+          </div>
+        </header>
+        <div class="chamber">
+          <div class="back-wall" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="field-surface">
+            <div id="field" class="field" aria-label="Линия позиций бойцов" role="region"></div>
+            <div id="field-die" class="field-die" aria-hidden="true" hidden>
+              <div class="die"><img src="./assets/d20.svg" alt=""><span id="field-die-value"></span></div>
+            </div>
+          </div>
+          <div id="ruler" class="ruler" aria-hidden="true"></div>
+        </div>
+        <div class="board-caption">
+          <p id="battle-status" role="status">Бойцы готовы к первому ходу.</p>
+          <div class="caption-meta">
+            <p class="legend"><span class="legend-actor">Ходит</span><span class="legend-target">Цель</span></p>
+            <span id="mini-die" class="mini-die"><img src="./assets/d20.svg" alt=""><span id="mini-die-value">–</span></span>
+          </div>
+        </div>
+        <div class="transport">
+          <div class="controls">
+            <button type="button" class="button secondary" id="new-battle" hidden>Новый бой</button>
+            <div class="arrows" role="group" aria-label="Перемотка на один ход">
+              <button type="button" class="button secondary icon" id="prev" aria-label="Предыдущий ход" disabled>←</button>
+              <button type="button" class="button secondary icon" id="next" aria-label="Следующий ход" disabled>→</button>
+            </div>
+            <button type="button" class="button secondary" id="sound" aria-pressed="false">Звук</button>
+            <label class="speed">Темп <select id="speed"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
+          </div>
+          <div class="timeline">
+            <label for="seek">Ход</label>
+            <input type="range" id="seek" min="0" max="0" value="0" disabled>
+            <output id="step-count" for="seek">0 / 0</output>
+          </div>
+        </div>
+      </section>
+
+      <aside class="ledger panel" aria-labelledby="ledger-title">
+        <header class="panel-header">
+          <p class="eyebrow">Лоток для кубиков</p>
+          <h2 id="ledger-title">Бросок удачи</h2>
+        </header>
+        <div class="tray">
+          <div id="die" class="die" aria-hidden="true"><img src="./assets/d20.svg" alt=""><span id="die-value">–</span></div>
+          <div class="roll-copy">
+            <p id="roll-title">Кости ждут</p>
+            <p id="roll-detail">Грань d20 показывает диапазон броска.</p>
+          </div>
+        </div>
+        <div class="chronicle">
+          <h3>Последние ходы</h3>
+          <p id="empty-log">Здесь появятся атаки, блоки и уклонения.</p>
+          <ol id="log" aria-label="Последние ходы"></ol>
+        </div>
+      </aside>
+    </div>
+
+    <section class="roster-section" aria-labelledby="roster-title">
+      <div class="roster-header">
+        <div><p class="eyebrow">Карты персонажей</p><h2 id="roster-title">Участники боя</h2></div>
+        <p id="survivors">6 из 6 в строю</p>
+      </div>
+      <div id="roster" class="roster"></div>
+    </section>
+    <footer><span>Итоговая работа по JavaScript</span><span>ПС-25-1 · Б. З. Кудайбердиев</span></footer>
+  </main>
+
+  <dialog id="rules" aria-labelledby="rules-title">
+    <p class="eyebrow">Справочник усыпальницы</p>
+    <h2 id="rules-title">Правила боя</h2>
+    <dl class="rule-list">
+      <dt>Порядок хода</dt><dd>Боец выбирает живого соперника с наименьшим здоровьем, идёт к нему и пробует атаковать. Побеждает последний выживший.</dd>
+      <dt>Позиции и защита</dt><dd>Бойцы ходят по одной оси. Высота спрайта помогает различать их на поле. Если позиции совпали, цель отскакивает вправо, а сила удара удваивается. Блок принимает удар на оружие, уклонение позволяет его избежать.</dd>
+      <dt>Бросок</dt><dd>Грань d20 показывает диапазон случайного числа, которое движок использовал для силы удара. Удача персонажа и защита считаются по правилам задания.</dd>
+      <dt>Просмотр</dt><dd>Пауза останавливает показ. Стрелки и ползунок выбирают завершённый ход. Повтор показывает ту же запись, новый бой заново рассчитывает исход.</dd>
+    </dl>
+    <form method="dialog"><button class="button primary" autofocus>К бою</button></form>
+  </dialog>
+  <dialog id="character" aria-labelledby="character-name">
+    <div class="character-head"><img id="character-art" alt="" width="64" height="64"><div><p class="eyebrow" id="character-class"></p><h2 id="character-name"></h2></div></div>
+    <p id="character-ability" class="character-ability"></p>
+    <dl id="character-stats" class="character-stats"></dl>
+    <form method="dialog"><button class="button primary" autofocus>Закрыть</button></form>
+  </dialog>
+
+  <template id="card-template">
+    <button type="button" class="fighter-card" aria-haspopup="dialog">
+      <span class="card-head"><img alt="" width="32" height="32"><span><strong class="card-name"></strong><span class="card-class"></span></span></span>
+      <span class="card-health"><span>Здоровье</span><span class="life"></span></span>
+      <span class="meter" aria-hidden="true"><i></i></span>
+      <span class="card-meta"><span class="mana"></span><span class="weapon"></span></span>
+    </button>
+  </template>
+</body>
+</html>
